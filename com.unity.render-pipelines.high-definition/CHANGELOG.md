@@ -90,6 +90,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added XR setting to control camera jitter for temporal effects
 - Added an error message in the DrawRenderers custom pass when rendering opaque objects with an HDRP asset in DeferredOnly mode.
 - Added API to enable proper recording of path traced scenes (with the Unity recorder or other tools).
+- Added option to disable XR rendering on the camera settings.
 
 ### Fixed
 - Fix when rescale probe all direction below zero (1219246)
