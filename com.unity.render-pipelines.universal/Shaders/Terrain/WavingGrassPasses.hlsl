@@ -47,7 +47,7 @@ void InitializeInputData(GrassVertexOutput input, out InputData inputData)
 
     inputData.normalWS = NormalizeNormalPerPixel(input.normal);
     inputData.viewDirectionWS = viewDirWS;
-    
+
 #if defined(REQUIRES_VERTEX_SHADOW_COORD_INTERPOLATOR)
     inputData.shadowCoord = input.shadowCoord;
 #elif defined(MAIN_LIGHT_CALCULATE_SHADOWS)
@@ -89,7 +89,7 @@ void InitializeVertData(GrassVertexInput input, inout GrassVertexOutput vertData
     half fogFactor = ComputeFogFactor(vertexInput.positionCS.z);
     vertData.fogFactorAndVertexLight = half4(fogFactor, vertexLight);
 
-#ifdef _MAIN_LIGHT_SHADOWS
+#if defined(REQUIRES_VERTEX_SHADOW_COORD_INTERPOLATOR)
     vertData.shadowCoord = GetShadowCoord(vertexInput);
 #endif
 }
