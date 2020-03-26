@@ -22,7 +22,8 @@ namespace UnityEditor.ShaderGraph
             ConcreteSlotValueType.Vector4,
             ConcreteSlotValueType.Matrix2,
             ConcreteSlotValueType.Matrix3,
-            ConcreteSlotValueType.Matrix4
+            ConcreteSlotValueType.Matrix4,
+            ConcreteSlotValueType.Boolean
         };
         public bool IsFirstSlotValid = true;
 
