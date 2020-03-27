@@ -35,10 +35,13 @@ SAMPLER_CMP(sampler_MainLightShadowmapTexture);
 TEXTURE2D_SHADOW(_AdditionalLightsShadowmapTexture);
 SAMPLER_CMP(sampler_AdditionalLightsShadowmapTexture);
 
+// GLES3 causes a performance regression in some devices when using CBUFFER.
+#ifndef SHADER_API_GLES3
+CBUFFER_START(MainLightShadows)
+#endif
 // Last cascade is initialized with a no-op matrix. It always transforms
 // shadow coord to half3(0, 0, NEAR_PLANE). We use this trick to avoid
 // branching since ComputeCascadeIndex can return cascade index = MAX_SHADOW_CASCADES
-CBUFFER_START(MainLightShadows)
 float4x4    _MainLightWorldToShadow[MAX_SHADOW_CASCADES + 1];
 float4      _CascadeShadowSplitSpheres0;
 float4      _CascadeShadowSplitSpheres1;
@@ -51,20 +54,23 @@ half4       _MainLightShadowOffset2;
 half4       _MainLightShadowOffset3;
 half4       _MainLightShadowParams;  // (x: shadowStrength, y: 1.0 if soft shadows, 0.0 otherwise)
 float4      _MainLightShadowmapSize; // (xy: 1/width and 1/height, zw: width and height)
+#ifndef SHADER_API_GLES3
 CBUFFER_END
+#endif
 
 #if USE_STRUCTURED_BUFFER_FOR_LIGHT_DATA
 StructuredBuffer<ShadowData> _AdditionalShadowsBuffer;
 StructuredBuffer<int> _AdditionalShadowsIndices;
-CBUFFER_START(AdditionalLightShadows)
 half4       _AdditionalShadowOffset0;
 half4       _AdditionalShadowOffset1;
 half4       _AdditionalShadowOffset2;
 half4       _AdditionalShadowOffset3;
 float4      _AdditionalShadowmapSize; // (xy: 1/width and 1/height, zw: width and height)
-CBUFFER_END
 #else
+// GLES3 causes a performance regression in some devices when using CBUFFER.
+#ifndef SHADER_API_GLES3
 CBUFFER_START(AdditionalLightShadows)
+#endif
 float4x4    _AdditionalLightsWorldToShadow[MAX_VISIBLE_LIGHTS];
 half4       _AdditionalShadowParams[MAX_VISIBLE_LIGHTS];
 half4       _AdditionalShadowOffset0;
@@ -72,7 +78,9 @@ half4       _AdditionalShadowOffset1;
 half4       _AdditionalShadowOffset2;
 half4       _AdditionalShadowOffset3;
 float4      _AdditionalShadowmapSize; // (xy: 1/width and 1/height, zw: width and height)
+#ifndef SHADER_API_GLES3
 CBUFFER_END
+#endif
 #endif
 
 float4 _ShadowBias; // x: depth bias, y: normal bias
