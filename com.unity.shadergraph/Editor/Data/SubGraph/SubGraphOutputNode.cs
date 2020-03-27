@@ -86,7 +86,7 @@ namespace UnityEditor.ShaderGraph
             else if (!s_ValidSlotTypes.Contains(slots.FirstOrDefault().concreteValueType))
             {
                 IsFirstSlotValid = false;
-                owner.AddValidationError(guid, "Preview can only compile if the first output slot is a Vector or Matrix type. Please adjust slot types.", ShaderCompilerMessageSeverity.Error);
+                owner.AddValidationError(guid, "Preview can only compile if the first output slot is a Vector, Matrix, or Boolean type. Please adjust slot types.", ShaderCompilerMessageSeverity.Error);
             }
         }
 
