@@ -90,6 +90,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added XR setting to control camera jitter for temporal effects
 - Added an error message in the DrawRenderers custom pass when rendering opaque objects with an HDRP asset in DeferredOnly mode.
 - Added API to enable proper recording of path traced scenes (with the Unity recorder or other tools).
+- Added support for fog in Recursive rendering, ray traced reflections and ray traced indirect diffuse.
+- Added an alpha blend option for recursive rendering
+- Added support for stack lit for ray tracing effects.
+- Added support for hair for ray tracing effects.
 - Added option to disable XR rendering on the camera settings.
 
 ### Fixed
@@ -488,6 +492,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Fixed render texture with XR
 - Fixed issue with resources being accessed before initialization process has been performed completely. 
 - Half fixed shuriken particle light that cast shadows (only the first one will be correct)
+- Fixed issue with atmospheric fog turning black if a planar reflection probe is placed below ground level. (case 1226588)
+- Fixed custom pass GC alloc issue in CustomPassVolume.GetActiveVolumes().
+- Fixed an issue related to the envlightdatasrt not being bound in recursive rendering.
 
 ### Changed
 - Color buffer pyramid is not allocated anymore if neither refraction nor distortion are enabled
@@ -593,6 +600,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Changed a few resources used by ray tracing shaders to be global resources (using register space1) for improved CPU performance.
 - All custom pass volumes are now executed for one injection point instead of the first one.
 - Hidden unsupported choice in emission in Materials
+- Temporal Anti aliasing improvements.
 
 ## [7.1.1] - 2019-09-05
 
