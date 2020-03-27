@@ -105,33 +105,33 @@ namespace UnityEngine.Rendering.HighDefinition
     [GenerateHLSL]
     struct SFiniteLightBound
     {
-        public Vector3 boxAxisX;
-        public Vector3 boxAxisY;
-        public Vector3 boxAxisZ;
-        public Vector3 center;        // a center in camera space inside the bounding volume of the light source.
-        public Vector2 scaleXY;
-        public float radius;
+        public Vector3 boxAxisX; // Scaled by the extents (half-size)
+        public Vector3 boxAxisY; // Scaled by the extents (half-size)
+        public Vector3 boxAxisZ; // Scaled by the extents (half-size)
+        public Vector3 center;   // Center of the bounds (box) in camera space
+        public Vector2 scaleXY;  // Scale applied to the top of the box to turn it into a truncated pyramid
+        public float radius;     // Circumscribed sphere for the bounds (box)
     };
 
     [GenerateHLSL]
     struct LightVolumeData
     {
-        public Vector3 lightPos;
-        public uint lightVolume;
+        public Vector3 lightPos;     // Of light's "origin"
+        public uint lightVolume;     // Type index
 
-        public Vector3 lightAxisX;
-        public uint lightCategory;
+        public Vector3 lightAxisX;   // Normalized
+        public uint lightCategory;   // Category index
 
-        public Vector3 lightAxisY;
-        public float radiusSq;
+        public Vector3 lightAxisY;   // Normalized
+        public float radiusSq;       // Cone and sphere: light range squared
 
-        public Vector3 lightAxisZ;      // spot +Z axis
-        public float cotan;
+        public Vector3 lightAxisZ;   // Normalized
+        public float cotan;          // Cone: cotan of the aperture (half-angle)
 
-        public Vector3 boxInnerDist;
+        public Vector3 boxInnerDist; // Box: extents (half-size) of the inner box
         public uint featureFlags;
 
-        public Vector3 boxInvRange;
+        public Vector3 boxInvRange;  // Box: 1 / (OuterBoxExtents - InnerBoxExtents)
         public float unused2;
     };
 
@@ -1119,7 +1119,7 @@ namespace UnityEngine.Rendering.HighDefinition
         }
 
         internal void GetDirectionalLightData(CommandBuffer cmd, HDCamera hdCamera, VisibleLight light, Light lightComponent, int lightIndex, int shadowIndex,
-            DebugDisplaySettings debugDisplaySettings, int sortedIndex, bool isPhysicallyBasedSkyActive, ref int screenSpaceShadowIndex, ref int screenSpaceShadowslot)
+            int sortedIndex, bool isPhysicallyBasedSkyActive, ref int screenSpaceShadowIndex, ref int screenSpaceShadowslot)
         {
             var processedData = m_ProcessedLightData[lightIndex];
             var additionalLightData = processedData.additionalLightData;
@@ -1272,7 +1272,7 @@ namespace UnityEngine.Rendering.HighDefinition
         }
 
         internal void GetLightData(CommandBuffer cmd, HDCamera hdCamera, HDShadowSettings shadowSettings, VisibleLight light, Light lightComponent,
-            int lightIndex, int shadowIndex, ref Vector3 lightDimensions, DebugDisplaySettings debugDisplaySettings, ref int screenSpaceShadowIndex, ref int screenSpaceChannelSlot)
+            int lightIndex, int shadowIndex, ref Vector3 lightDimensions, ref int screenSpaceShadowIndex, ref int screenSpaceChannelSlot)
         {
             var processedData = m_ProcessedLightData[lightIndex];
             var additionalLightData = processedData.additionalLightData;
@@ -1630,63 +1630,61 @@ namespace UnityEngine.Rendering.HighDefinition
             else if (gpuLightType == GPULightType.Tube)
             {
                 Vector3 dimensions = new Vector3(lightDimensions.x + 2 * range, 2 * range, 2 * range); // Omni-directional
-                Vector3 extents = 0.5f * dimensions;
+                Vector3 extents    = 0.5f * dimensions;
+                Vector3 centerVS   = positionVS;
 
-                bound.center = positionVS;
+                bound.center   = centerVS;
                 bound.boxAxisX = extents.x * xAxisVS;
                 bound.boxAxisY = extents.y * yAxisVS;
                 bound.boxAxisZ = extents.z * zAxisVS;
+                bound.radius   = extents.magnitude;
                 bound.scaleXY.Set(1.0f, 1.0f);
-                bound.radius = extents.magnitude;
 
-                lightVolumeData.lightPos = positionVS;
+                lightVolumeData.lightPos   = centerVS;
                 lightVolumeData.lightAxisX = xAxisVS;
                 lightVolumeData.lightAxisY = yAxisVS;
                 lightVolumeData.lightAxisZ = zAxisVS;
-                lightVolumeData.boxInnerDist = new Vector3(lightDimensions.x, 0, 0);
-                lightVolumeData.boxInvRange.Set(1.0f / range, 1.0f / range, 1.0f / range);
+                lightVolumeData.boxInvRange.Set(1.0f / extents.x, 1.0f / extents.y, 1.0f / extents.z);
                 lightVolumeData.featureFlags = (uint)LightFeatureFlags.Area;
             }
             else if (gpuLightType == GPULightType.Rectangle)
             {
                 Vector3 dimensions = new Vector3(lightDimensions.x + 2 * range, lightDimensions.y + 2 * range, range); // One-sided
-                Vector3 extents = 0.5f * dimensions;
-                Vector3 centerVS = positionVS + extents.z * zAxisVS;
+                Vector3 extents    = 0.5f * dimensions;
+                Vector3 centerVS   = positionVS + extents.z * zAxisVS;
 
-                bound.center = centerVS;
+                bound.center   = centerVS;
                 bound.boxAxisX = extents.x * xAxisVS;
                 bound.boxAxisY = extents.y * yAxisVS;
                 bound.boxAxisZ = extents.z * zAxisVS;
+                bound.radius   = extents.magnitude;
                 bound.scaleXY.Set(1.0f, 1.0f);
-                bound.radius = extents.magnitude;
 
-                lightVolumeData.lightPos = centerVS;
+                lightVolumeData.lightPos   = centerVS;
                 lightVolumeData.lightAxisX = xAxisVS;
                 lightVolumeData.lightAxisY = yAxisVS;
                 lightVolumeData.lightAxisZ = zAxisVS;
-                lightVolumeData.boxInnerDist = extents;
-                lightVolumeData.boxInvRange.Set(Mathf.Infinity, Mathf.Infinity, Mathf.Infinity);
+                lightVolumeData.boxInvRange.Set(1.0f / extents.x, 1.0f / extents.y, 1.0f / extents.z);
                 lightVolumeData.featureFlags = (uint)LightFeatureFlags.Area;
             }
             else if (gpuLightType == GPULightType.ProjectorBox)
             {
                 Vector3 dimensions = new Vector3(lightDimensions.x, lightDimensions.y, range);  // One-sided
-                Vector3 extents = 0.5f * dimensions;
-                Vector3 centerVS = positionVS + extents.z * zAxisVS;
+                Vector3 extents    = 0.5f * dimensions;
+                Vector3 centerVS   = positionVS + extents.z * zAxisVS;
 
-                bound.center = centerVS;
+                bound.center   = centerVS;
                 bound.boxAxisX = extents.x * xAxisVS;
                 bound.boxAxisY = extents.y * yAxisVS;
                 bound.boxAxisZ = extents.z * zAxisVS;
-                bound.radius = extents.magnitude;
+                bound.radius   = extents.magnitude;
                 bound.scaleXY.Set(1.0f, 1.0f);
 
-                lightVolumeData.lightPos = centerVS;
+                lightVolumeData.lightPos   = centerVS;
                 lightVolumeData.lightAxisX = xAxisVS;
                 lightVolumeData.lightAxisY = yAxisVS;
                 lightVolumeData.lightAxisZ = zAxisVS;
-                lightVolumeData.boxInnerDist = extents;
-                lightVolumeData.boxInvRange.Set(Mathf.Infinity, Mathf.Infinity, Mathf.Infinity);
+                lightVolumeData.boxInvRange.Set(1.0f / extents.x, 1.0f / extents.y, 1.0f / extents.z);
                 lightVolumeData.featureFlags = (uint)LightFeatureFlags.Punctual;
             }
             else if (gpuLightType == GPULightType.Disc)
@@ -1702,7 +1700,7 @@ namespace UnityEngine.Rendering.HighDefinition
             m_lightList.lightsPerView[viewIndex].lightVolumes.Add(lightVolumeData);
         }
 
-        internal bool GetEnvLightData(CommandBuffer cmd, HDCamera hdCamera, in ProcessedProbeData processedProbe, DebugDisplaySettings debugDisplaySettings, ref EnvLightData envLightData)
+        internal bool GetEnvLightData(CommandBuffer cmd, HDCamera hdCamera, in ProcessedProbeData processedProbe, ref EnvLightData envLightData)
         {
             Camera camera = hdCamera.camera;
             HDProbe probe = processedProbe.hdProbe;
@@ -2168,7 +2166,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
             // Now that all the lights have requested a shadow resolution, we can layout them in the atlas
             // And if needed rescale the whole atlas
-            m_ShadowManager.LayoutShadowMaps(debugDisplaySettings.data.lightingDebugSettings);
+            m_ShadowManager.LayoutShadowMaps(m_CurrentDebugDisplaySettings.data.lightingDebugSettings);
 
             // Using the same pattern than shadowmaps, light have requested space in the atlas for their
             // cookies and now we can layout the atlas (re-insert all entries by order of size) if needed
@@ -2217,11 +2215,11 @@ namespace UnityEngine.Rendering.HighDefinition
                 if (additionalLightData.WillRenderShadowMap())
                 {
                     int shadowRequestCount;
-                    shadowIndex = additionalLightData.UpdateShadowRequest(hdCamera, m_ShadowManager, hdShadowSettings, light, cullResults, lightIndex, debugDisplaySettings.data.lightingDebugSettings, out shadowRequestCount);
+                    shadowIndex = additionalLightData.UpdateShadowRequest(hdCamera, m_ShadowManager, hdShadowSettings, light, cullResults, lightIndex, m_CurrentDebugDisplaySettings.data.lightingDebugSettings, out shadowRequestCount);
 
 #if UNITY_EDITOR
-                    if ((debugDisplaySettings.data.lightingDebugSettings.shadowDebugUseSelection
-                            || debugDisplaySettings.data.lightingDebugSettings.shadowDebugMode == ShadowMapDebugMode.SingleShadow)
+                    if ((m_CurrentDebugDisplaySettings.data.lightingDebugSettings.shadowDebugUseSelection
+                            || m_CurrentDebugDisplaySettings.data.lightingDebugSettings.shadowDebugMode == ShadowMapDebugMode.SingleShadow)
                         && UnityEditor.Selection.activeGameObject == lightComponent.gameObject)
                     {
                         m_DebugSelectedLightShadowIndex = shadowIndex;
@@ -2233,7 +2231,7 @@ namespace UnityEngine.Rendering.HighDefinition
                 // Directional rendering side, it is separated as it is always visible so no volume to handle here
                 if (gpuLightType == GPULightType.Directional)
                 {
-                    GetDirectionalLightData(cmd, hdCamera, light, lightComponent, lightIndex, shadowIndex, debugDisplaySettings, directionalLightcount, isPbrSkyActive, ref m_ScreenSpaceShadowIndex, ref m_ScreenSpaceShadowChannelSlot);
+                    GetDirectionalLightData(cmd, hdCamera, light, lightComponent, lightIndex, shadowIndex, directionalLightcount, isPbrSkyActive, ref m_ScreenSpaceShadowIndex, ref m_ScreenSpaceShadowChannelSlot);
 
                     directionalLightcount++;
 
@@ -2253,7 +2251,7 @@ namespace UnityEngine.Rendering.HighDefinition
                     Vector3 lightDimensions = new Vector3(); // X = length or width, Y = height, Z = range (depth)
 
                     // Punctual, area, projector lights - the rendering side.
-                    GetLightData(cmd, hdCamera, hdShadowSettings, light, lightComponent, lightIndex, shadowIndex, ref lightDimensions, debugDisplaySettings, ref m_ScreenSpaceShadowIndex, ref m_ScreenSpaceShadowChannelSlot);
+                    GetLightData(cmd, hdCamera, hdShadowSettings, light, lightComponent, lightIndex, shadowIndex, ref lightDimensions, ref m_ScreenSpaceShadowIndex, ref m_ScreenSpaceShadowChannelSlot);
 
                     switch (lightCategory)
                     {
@@ -2305,7 +2303,7 @@ namespace UnityEngine.Rendering.HighDefinition
                 return true;
 
             // Discard probe if disabled in debug menu
-            if (!debugDisplaySettings.data.lightingDebugSettings.showReflectionProbe)
+            if (!m_CurrentDebugDisplaySettings.data.lightingDebugSettings.showReflectionProbe)
                 return true;
 
             // Discard probe if its distance is too far or if its weight is at 0
@@ -2346,7 +2344,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
         int PreprocessVisibleProbes(HDCamera hdCamera, CullingResults cullResults, HDProbeCullingResults hdProbeCullingResults, in AOVRequestData aovRequest)
         {
-            var debugLightFilter = debugDisplaySettings.GetDebugLightFilterMode();
+            var debugLightFilter = m_CurrentDebugDisplaySettings.GetDebugLightFilterMode();
             var hasDebugLightFilter = debugLightFilter != DebugLightFilterMode.None;
 
             // Redo everything but this time with envLights
@@ -2453,7 +2451,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
                 EnvLightData envLightData = new EnvLightData();
 
-                if (GetEnvLightData(cmd, hdCamera, processedProbe, debugDisplaySettings, ref envLightData))
+                if (GetEnvLightData(cmd, hdCamera, processedProbe, ref envLightData))
                 {
                     // it has been filled
                     m_lightList.envLights.Add(envLightData);
@@ -3571,7 +3569,7 @@ namespace UnityEngine.Rendering.HighDefinition
             if (hdCamera.frameSettings.litShaderMode != LitShaderMode.Deferred)
                 return;
 
-            var parameters = PrepareDeferredLightingParameters(hdCamera, debugDisplaySettings);
+            var parameters = PrepareDeferredLightingParameters(hdCamera, m_CurrentDebugDisplaySettings);
             var resources = PrepareDeferredLightingResources();
 
             if (parameters.enableTile)
