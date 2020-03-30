@@ -128,8 +128,9 @@ all_smoke_tests_{{ editor.version }}:
   {% endfor %}
 {% endfor %}
 
-trunk_verification:
-  name: Trunk verification 
+{% for editor in editors %}
+trunk_verification_{{ editor.version }}:
+  name: Trunk verification - {{ editor.version }}
   agent:
     type: Unity::VM
     image: cds-ops/ubuntu-18.04-agent:stable
@@ -157,11 +158,12 @@ trunk_verification:
     #skip
     {% else %}
     
-    - path: .yamato/upm-ci-{{ project.name | downcase }}.yml#{{ project.name }}_Win_DX11_{{ testplatform.name }}_CUSTOM-REVISION
+    - path: .yamato/upm-ci-{{ project.name | downcase }}.yml#{{ project.name }}_Win_DX11_{{ testplatform.name }}_{{ editor.version }}
       rerun: always
     {% endif %}
     {% endif %}
     {% endif %}
     {% endif %}
+    {% endfor %}
     {% endfor %}
     {% endfor %}
