@@ -495,6 +495,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Fixed custom pass GC alloc issue in CustomPassVolume.GetActiveVolumes().
 - Fixed an issue related to the envlightdatasrt not being bound in recursive rendering.
 - Fixed shadow cascade tooltip when using the metric mode (case 1229232)
+- Fixed light type resolution when performing a reset on HDAdditionalLightData (case 1220931)
 
 ### Changed
 - Color buffer pyramid is not allocated anymore if neither refraction nor distortion are enabled
