@@ -80,7 +80,7 @@ linux_apis:
     image: {{ platform.image }}      
     flavor: {{ platform.flavor }}
   variables:
-    UPM_REGISTRY: https://packages.unity.com
+    UPM_REGISTRY: https://artifactory-slo.bf.unity3d.com/artifactory/api/npm/upm-candidates
     {% if editor.version == 'CUSTOM-REVISION' %}
     CUSTOM_REVISION: custom_revision_not_set
     {% endif %}
@@ -118,7 +118,7 @@ linux_apis:
     image: {{ platform.image }}      
     flavor: {{ platform.flavor }}
   variables:
-    UPM_REGISTRY: https://packages.unity.com
+    UPM_REGISTRY: https://artifactory-slo.bf.unity3d.com/artifactory/api/npm/upm-candidates
     {% if editor.version == 'CUSTOM-REVISION' %}
     CUSTOM_REVISION: custom_revision_not_set
     {% endif %}
@@ -167,7 +167,7 @@ linux_apis:
     image: {{ platform.image }}      
     flavor: {{ platform.flavor }}
   variables:
-    UPM_REGISTRY: https://packages.unity.com
+    UPM_REGISTRY: https://artifactory-slo.bf.unity3d.com/artifactory/api/npm/upm-candidates
     {% if editor.version == 'CUSTOM-REVISION' %}
     CUSTOM_REVISION: custom_revision_not_set
     {% endif %}

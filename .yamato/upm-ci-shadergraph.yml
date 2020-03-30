@@ -84,7 +84,7 @@ linux_apis:
     image: sdet/gamecode_win10:stable
   skip_checkout: true
   variables:
-    UPM_REGISTRY: https://packages.unity.com
+    UPM_REGISTRY: https://artifactory-slo.bf.unity3d.com/artifactory/api/npm/upm-candidates
     {% if editor.version == 'CUSTOM-REVISION' %}
     CUSTOM_REVISION: custom_revision_not_set
     {% endif %}
@@ -112,7 +112,7 @@ Build_{{ project.name }}_Win_{{ win_api.name }}_Player_{{ editor.version }}:
     type: Unity::VM
     image: sdet/gamecode_win10:stable
   variables:
-    UPM_REGISTRY: https://packages.unity.com
+    UPM_REGISTRY: https://artifactory-slo.bf.unity3d.com/artifactory/api/npm/upm-candidates
     {% if editor.version == 'CUSTOM-REVISION' %}
     CUSTOM_REVISION: custom_revision_not_set
     {% endif %}
@@ -147,7 +147,7 @@ Build_{{ project.name }}_Win_{{ win_api.name }}_Player_{{ editor.version }}:
     image: {{ platform.image }}      
     flavor: {{ platform.flavor }}
   variables:
-    UPM_REGISTRY: https://packages.unity.com
+    UPM_REGISTRY: https://artifactory-slo.bf.unity3d.com/artifactory/api/npm/upm-candidates
     {% if editor.version == 'CUSTOM-REVISION' %}
     CUSTOM_REVISION: custom_revision_not_set
     {% endif %}
@@ -183,7 +183,7 @@ Build_{{ project.name }}_OSX_OpenGLCore_Player_{{ editor.version }}:
     image: {{ platform.image }}      
     flavor: {{ platform.flavor }}
   variables:
-    UPM_REGISTRY: https://packages.unity.com
+    UPM_REGISTRY: https://artifactory-slo.bf.unity3d.com/artifactory/api/npm/upm-candidates
     {% if editor.version == 'CUSTOM-REVISION' %}
     CUSTOM_REVISION: custom_revision_not_set
     {% endif %}
@@ -213,7 +213,7 @@ Build_{{ project.name }}_OSX_OpenGLCore_Player_{{ editor.version }}:
       flavor: m1.mac
   skip_checkout: true
   variables:
-    UPM_REGISTRY: https://packages.unity.com
+    UPM_REGISTRY: https://artifactory-slo.bf.unity3d.com/artifactory/api/npm/upm-candidates
     {% if editor.version == 'CUSTOM-REVISION' %}
     CUSTOM_REVISION: custom_revision_not_set
     {% endif %}
@@ -242,7 +242,7 @@ Build_{{ project.name }}_OSX_OpenGLCore_Player_{{ editor.version }}:
     image: buildfarm/mac:stable
     flavor: m1.mac
   variables:
-    UPM_REGISTRY: https://packages.unity.com
+    UPM_REGISTRY: https://artifactory-slo.bf.unity3d.com/artifactory/api/npm/upm-candidates
     {% if editor.version == 'CUSTOM-REVISION' %}
     CUSTOM_REVISION: custom_revision_not_set
     {% endif %}
@@ -283,7 +283,7 @@ Build_{{ project.name }}_OSX_OpenGLCore_Player_{{ editor.version }}:
     image: {{ platform.image }}      
     flavor: {{ platform.flavor }}
   variables:
-    UPM_REGISTRY: https://packages.unity.com
+    UPM_REGISTRY: https://artifactory-slo.bf.unity3d.com/artifactory/api/npm/upm-candidates
     {% if editor.version == 'CUSTOM-REVISION' %}
     CUSTOM_REVISION: custom_revision_not_set
     {% endif %}
@@ -333,7 +333,7 @@ Build_{{ project.name }}_OSX_OpenGLCore_Player_{{ editor.version }}:
     image: {{ platform.image }}      
     flavor: {{ platform.flavor }}
   variables:
-    UPM_REGISTRY: https://packages.unity.com
+    UPM_REGISTRY: https://artifactory-slo.bf.unity3d.com/artifactory/api/npm/upm-candidates
     {% if editor.version == 'CUSTOM-REVISION' %}
     CUSTOM_REVISION: custom_revision_not_set
     {% endif %}
