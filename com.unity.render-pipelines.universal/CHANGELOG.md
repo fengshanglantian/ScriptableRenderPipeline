@@ -21,7 +21,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added the option to control the transparent layer separately in the Forward Renderer.
 - Added the ability to set individual RendererFeatures to be active or not, use `ScriptableRendererFeature.SetActive(bool)` to set whether a Renderer Feature will execute,  `ScriptableRendererFeature.isActive` can be used to check the current active state of the Renderer Feature.
 - If Unity Editor Analytics are enabled, Universal collects anonymous data about usage of Universal. This helps the Universal team focus our efforts on the most common scenarios, and better understand the needs of our customers.
-- Added a FrameSetup function to the ScriptableRenderPass API, that gets called by the renderer before rendering a camera
+- Added a OnCameraSetup() function to the ScriptableRenderPass API, that gets called by the renderer before rendering each camera
+- Added a OnCameraCleanup() function to the ScriptableRenderPass API, that gets called by the renderer after rendering each camera
 
 ### Changed
 - Moved the icon that indicates the type of a Light 2D from the Inspector header to the Light Type field.
@@ -41,7 +42,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Renderer Feature list is now redesigned to fit more closely to the Volume Profile UI, this vastly improves UX and reliability of the Renderer Features List.
 - Default color values for Lit and SimpleLit shaders changed to white due to issues with texture based workflows.
 - You can now subclass ForwardRenderer to create a custom renderer based on it.
-- DepthOnlyPass, CopyDepthPass and CopyColorPass now use FrameSetup() instead of Configure() to set up their passes before executing
+- The virtual ScriptableRenderer.FrameCleanup() function has been marked obsolete and replaced by ScriptableRenderer.OnCameraCleanup() to better describe when the function gets invoked by the renderer.
+- DepthOnlyPass, CopyDepthPass and CopyColorPass now use OnCameraSetup() instead of Configure() to set up their passes before executing as they only need to get their rendertextures once per camera instead of once per eye.
 
 ### Fixed
 - Fixed an issue where linear to sRGB conversion occurred twice on certain Android devices.
