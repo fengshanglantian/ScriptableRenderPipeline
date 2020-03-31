@@ -152,6 +152,9 @@ namespace UnityEngine.Rendering.Universal
             m_ClearColor = clearColor;
         }
 
+        public virtual void FrameSetup(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor, ref RenderingData renderingData)
+        {}
+
         /// <summary>
         /// This method is called by the renderer before executing the render pass.
         /// Override this method if you need to to configure render targets and their clear state, and to create temporary render target textures.

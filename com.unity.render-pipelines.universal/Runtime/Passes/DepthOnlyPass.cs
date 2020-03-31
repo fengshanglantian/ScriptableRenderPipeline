@@ -45,7 +45,7 @@ namespace UnityEngine.Rendering.Universal.Internal
             descriptor = baseDescriptor;
         }
 
-        public override void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor)
+        public override void FrameSetup(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor, ref RenderingData renderingData)
         {
             cmd.GetTemporaryRT(depthAttachmentHandle.id, descriptor, FilterMode.Point);
             ConfigureTarget(depthAttachmentHandle.Identifier());
