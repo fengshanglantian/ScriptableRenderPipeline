@@ -160,12 +160,12 @@ namespace UnityEngine.Rendering.Universal
             Vector4 cosTimeVector = new Vector4(Mathf.Cos(timeEights), Mathf.Cos(timeFourth), Mathf.Cos(timeHalf), Mathf.Cos(time));
             Vector4 deltaTimeVector = new Vector4(deltaTime, 1f / deltaTime, smoothDeltaTime, 1f / smoothDeltaTime);
             Vector4 timeParametersVector = new Vector4(time, Mathf.Sin(time), Mathf.Cos(time), 0.0f);
-    
+
             cmd.SetGlobalVector(UniversalRenderPipeline.PerFrameBuffer._Time, timeVector);
             cmd.SetGlobalVector(UniversalRenderPipeline.PerFrameBuffer._SinTime, sinTimeVector);
             cmd.SetGlobalVector(UniversalRenderPipeline.PerFrameBuffer._CosTime, cosTimeVector);
             cmd.SetGlobalVector(UniversalRenderPipeline.PerFrameBuffer.unity_DeltaTime, deltaTimeVector);
-            cmd.SetGlobalVector(UniversalRenderPipeline.PerFrameBuffer._TimeParameters, timeParametersVector);        
+            cmd.SetGlobalVector(UniversalRenderPipeline.PerFrameBuffer._TimeParameters, timeParametersVector);
         }
 
         public RenderTargetIdentifier cameraColorTarget
@@ -352,17 +352,17 @@ namespace UnityEngine.Rendering.Universal
 #endif
             float deltaTime = Time.deltaTime;
             float smoothDeltaTime = Time.smoothDeltaTime;
-            
+
             // Initialize Camera Render State
             ClearRenderingState(cmd);
             SetPerCameraShaderVariables(cmd, ref cameraData);
             SetShaderTimeValues(cmd, time, deltaTime, smoothDeltaTime);
             context.ExecuteCommandBuffer(cmd);
             cmd.Clear();
-            
+
             // Sort the render pass queue
             SortStable(m_ActiveRenderPassQueue);
-            
+
             // Upper limits for each block. Each block will contains render passes with events below the limit.
             NativeArray<RenderPassEvent> blockEventLimits = new NativeArray<RenderPassEvent>(k_RenderPassBlockCount, Allocator.Temp);
             blockEventLimits[RenderPassBlock.BeforeRendering] = RenderPassEvent.BeforeRenderingPrepasses;
@@ -859,7 +859,7 @@ namespace UnityEngine.Rendering.Universal
             CommandBuffer cmd = CommandBufferPool.Get(k_ReleaseResourcesTag);
             for (int i = 0; i < m_ActiveRenderPassQueue.Count; ++i)
             {
-                m_ActiveRenderPassQueue[i].FrameSetup(cmd, renderingData.cameraData.cameraTargetDescriptor, ref renderingData);
+                m_ActiveRenderPassQueue[i].OnCameraSetup(cmd, ref renderingData);
             }
             context.ExecuteCommandBuffer(cmd);
             CommandBufferPool.Release(cmd);
@@ -870,7 +870,7 @@ namespace UnityEngine.Rendering.Universal
             CommandBuffer cmd = CommandBufferPool.Get(k_ReleaseResourcesTag);
 
             for (int i = 0; i < m_ActiveRenderPassQueue.Count; ++i)
-                m_ActiveRenderPassQueue[i].FrameCleanup(cmd);
+                m_ActiveRenderPassQueue[i].OnCameraCleanup(cmd);
 
             // Happens when rendering the last camera in the camera stack.
             if (resolveFinalTarget)

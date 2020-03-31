@@ -159,11 +159,10 @@ namespace UnityEngine.Rendering.Universal
         /// You should never call CommandBuffer.SetRenderTarget. Instead call <c>ConfigureTarget</c> and <c>ConfigureClear</c>.
         /// </summary>
         /// <param name="cmd">CommandBuffer to enqueue rendering commands. This will be executed by the pipeline.</param>
-        /// <param name="cameraTextureDescriptor">Render texture descriptor of the camera render target.</param>
         /// <param name="renderingData">Current rendering state information</param>
         /// <seealso cref="ConfigureTarget"/>
         /// <seealso cref="ConfigureClear"/>
-        public virtual void FrameSetup(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor, ref RenderingData renderingData)
+        public virtual void OnCameraSetup(CommandBuffer cmd, ref RenderingData renderingData)
         {}
 
         /// <summary>
@@ -179,6 +178,7 @@ namespace UnityEngine.Rendering.Universal
         public virtual void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor)
         {}
 
+
         /// <summary>
         /// Called upon finish rendering a camera. You can use this callback to release any resources created
         /// by this render
@@ -186,8 +186,10 @@ namespace UnityEngine.Rendering.Universal
         /// This method be called for all cameras in a camera stack.
         /// </summary>
         /// <param name="cmd">Use this CommandBuffer to cleanup any generated data</param>
-        public virtual void FrameCleanup(CommandBuffer cmd)
-        {}
+        public virtual void OnCameraCleanup(CommandBuffer cmd)
+        {
+
+        }
 
         /// <summary>
         /// Called upon finish rendering a camera stack. You can use this callback to release any resources created
@@ -295,5 +297,13 @@ namespace UnityEngine.Rendering.Universal
             else
                 CoreUtils.SetRenderTarget(cmd, colorAttachment, colorLoadAction, colorStoreAction, clearFlags, clearColor);
         }
+
+
+        #region Obsolete
+
+        [Obsolete("This method is obsolete. Please use OnCameraCleanup()", false)]
+        public virtual void FrameCleanup(CommandBuffer cmd) => OnCameraCleanup(cmd);
+
+        #endregion
     }
 }

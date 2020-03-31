@@ -37,9 +37,9 @@ namespace UnityEngine.Rendering.Universal.Internal
             this.destination = destination;
         }
 
-        public override void FrameSetup(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor, ref RenderingData renderingData)
+        public override void OnCameraSetup(CommandBuffer cmd, ref RenderingData renderingData)
         {
-            var descriptor = cameraTextureDescriptor;
+            var descriptor = renderingData.cameraData.cameraTargetDescriptor;
             descriptor.colorFormat = RenderTextureFormat.Depth;
             descriptor.depthBufferBits = 32; //TODO: do we really need this. double check;
             descriptor.msaaSamples = 1;
@@ -115,7 +115,7 @@ namespace UnityEngine.Rendering.Universal.Internal
         }
 
         /// <inheritdoc/>
-        public override void FrameCleanup(CommandBuffer cmd)
+        public override void OnCameraCleanup(CommandBuffer cmd)
         {
             if (cmd == null)
                 throw new ArgumentNullException("cmd");
