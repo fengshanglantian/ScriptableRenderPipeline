@@ -42,9 +42,9 @@ namespace UnityEngine.Rendering.Universal.Internal
             m_DownsamplingMethod = downsampling;
         }
 
-        public override void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescripor)
+        public override void FrameSetup(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor, ref RenderingData renderingData)
         {
-            RenderTextureDescriptor descriptor = cameraTextureDescripor;
+            RenderTextureDescriptor descriptor = cameraTextureDescriptor;
             descriptor.msaaSamples = 1;
             descriptor.depthBufferBits = 0;
             if (m_DownsamplingMethod == Downsampling._2xBilinear)
