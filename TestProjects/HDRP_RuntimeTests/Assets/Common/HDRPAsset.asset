@@ -153,7 +153,8 @@ MonoBehaviour:
   m_RenderPipelineRayTracingResources: {fileID: 0}
   m_DefaultVolumeProfile: {fileID: 11400000, guid: dc4052ec38b9ac147a469135b69baa9a,
     type: 2}
-  m_DefaultLookDevProfile: {fileID: 0}
+  m_DefaultLookDevProfile: {fileID: 11400000, guid: 254c4fe87beb7be4fa72e1681edbed02,
+    type: 2}
   m_RenderingPathDefaultCameraFrameSettings:
     bitDatas:
       data1: 70282844831580
@@ -190,6 +191,7 @@ MonoBehaviour:
   m_RenderPipelineSettings:
     supportShadowMask: 1
     supportSSR: 1
+    supportSSRTransparent: 0
     supportSSAO: 1
     supportSubsurfaceScattering: 1
     increaseSssSampleCount: 0
@@ -224,10 +226,9 @@ MonoBehaviour:
       cookieFormat: 74
       pointCookieSize: 128
       cubeCookieTexArraySize: 16
-      cookieTexArraySize: 16
       cookieAtlasLastValidMip: 0
-      cookieAreaTextureArraySize: 16
-      planarReflectionAtlasSize: 8192
+      cookieTexArraySize: 16
+      planarReflectionAtlasSize: 512
       reflectionProbeCacheSize: 64
       reflectionCubemapSize: 256
       reflectionCacheCompressed: 0
@@ -297,6 +298,7 @@ MonoBehaviour:
     xrSettings:
       singlePass: 1
       occlusionMesh: 1
+      cameraJitter: 0
     postProcessQualitySettings:
       NearBlurSampleCount: 030000000500000008000000
       NearBlurMaxRadius:
